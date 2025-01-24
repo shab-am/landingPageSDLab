@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level-1</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+            overflow-x: hidden;
+        }
+        
+        h1 {
+            color: #2b7a78;
+        }
+        
+        h2 {
+            color: #2b7a78;
+        }
+        
+        #note {
+            background-color: #fff;
+            color: #333;
+            border: 2px solid #007BFF;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            width: 25%;
+            height: 45%;
+            text-align: center;
+            display: inline-block;
+            vertical-align: top;
+            position: fixed;
+            left: 20px;
+            top: 100px;
+            z-index: 1000;
+            margin: 0;
+            max-height: 80vh;
+            overflow-y: auto;
+            margin-left: 120px;
+            margin-top: 80px;
+        }
+        
+        #note h3 {
+            margin: 0 0 10px 0;
+            color: #007BFF;
+            text-transform: uppercase;
+            font-size: 1.5em;
+        }
+        
+        #note ul {
+            margin: 0;
+            font-size: 1em;
+            line-height: 1.6;
+            text-align: left;
+        }
+        
+        .tree-container {
+            margin-bottom: 40px;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 20px;
+            display: inline-block;
+            vertical-align: top;
+            display: inline-block;
+            vertical-align: top;
+            width: 65%;
+        }
+        
+        .tree-image {
+            margin: 20px auto;
+            width: 75%;
+            height: auto;
+        }
+        
+        .node-list {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px 0;
+        }
+        
+        .node-item {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            border: 2px solid #333;
+            border-radius: 50%;
+            text-align: center;
+            background-color: #f9f9f9;
+            margin: 5px;
+            cursor: pointer;
+        }
+        
+        .array-container {
+            display: flex;
+            justify-content: center;
+            margin: 30px auto;
+            position: relative;
+            flex-wrap: wrap;
+            max-width: 800px;
+            gap: 10px 5px;
+        }
+        
+        .array-slot {
+            width: 50px;
+            height: 50px;
+            border: 2px dashed #888;
+            margin: 25px 5px 5px;
+            position: relative;
+            font-size: 1.2em;
+        }
+        
+        .array-slot .index {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.9em;
+            color: #555;
+            background: white;
+            padding: 2px 5px;
+        }
+        
+        .array-slot .value {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: bold;
+        }
+        
+        .message {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2b7a78;
+        }
+        
+        .selected {
+            background-color: #d3f9d8;
+        }
+        
+        .action-buttons {
+            margin-top: 20px;
+        }
+        
+        .action-buttons button {
+            margin: 0 10px;
+        }
+        
+        .clearfix {
+            text-align: center;
+            margin: 0 auto;
+            max-width: 1400px;
+            display: flex;
+            padding-left: calc(25% + 170px);
+        }
+        
+        #treesContainer {
+            text-align: center;
+            flex-grow: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>WELCOME TO LEVEL-1</h1>
+    <H2>Binary Tree: Array Representation</H2>
+    <br>
+    <div class="clearfix">
+        <div id="note">
+            <h3>NOTE</h3>
+            <ul>
+                <li>If the index of parent node is p, then the index of left child is (2*p+1) and the index of right child is (2*p+2)</li>
+                <li>Click on the node to copy the node value and then click on the block of an array where you want to place that node value</li>
+                <li>Click on <strong>Clear Array</strong> button to clear your updations</li>
+                <li>Click on <strong>Check Answer</strong> button to check your answer</li>
+            </ul>
+        </div>
+        <div id="treesContainer"></div>
+    </div>
+
+    <script>
+        const trees = [{
+            image: "/pbt.jpeg",
+            nodes: ["18", "15", "30", "40", "50", "100", "40"],
+        }, {
+            image: "/cbt.jpeg",
+            nodes: ["12", "8", "18", "5", "11", null, null],
+        }, {
+            image: "/dbt.jpeg",
+            nodes: ["10", "20", null, null, "30", null, null, null, null, null, "40", null, null, null, null],
+        }];
+
+        let currentTreeIndex = 0;
+        const treesContainer = document.getElementById('treesContainer');
+
+        function createTreeUI(tree, treeIndex) {
+            const treeContainer = document.createElement('div');
+            treeContainer.classList.add('tree-container');
+
+            const treeImage = document.createElement('img');
+            treeImage.classList.add('tree-image');
+            treeImage.src = tree.image;
+
+            const nodeList = document.createElement('div');
+            nodeList.classList.add('node-list');
+            tree.nodes.forEach(value => {
+                if (value !== null) {
+                    const node = document.createElement('div');
+                    node.classList.add('node-item');
+                    node.dataset.value = value;
+                    node.textContent = value;
+                    node.addEventListener('click', () => selectNode(node, treeIndex));
+                    nodeList.appendChild(node);
+                }
+            });
+
+            const arrayContainer = document.createElement('div');
+            arrayContainer.classList.add('array-container');
+            for (let i = 0; i < tree.nodes.length; i++) {
+                const slot = document.createElement('div');
+                slot.classList.add('array-slot');
+                slot.dataset.index = i;
+                slot.innerHTML = `<div class="index">${i}</div><div class="value"></div>`;
+                slot.addEventListener('click', () => placeValueInSlot(slot, treeIndex));
+                arrayContainer.appendChild(slot);
+            }
+
+            const actionButtons = document.createElement('div');
+            actionButtons.classList.add('action-buttons');
+
+            const checkAnswerButton = document.createElement('button');
+            checkAnswerButton.textContent = 'Check Answer';
+            checkAnswerButton.addEventListener('click', () => checkAnswer(tree, treeIndex, treeContainer));
+
+            const clearArrayButton = document.createElement('button');
+            clearArrayButton.textContent = 'Clear Array';
+            clearArrayButton.addEventListener('click', () => clearArray(arrayContainer));
+
+            
+            actionButtons.appendChild(checkAnswerButton);
+            actionButtons.appendChild(clearArrayButton);
+
+            const message = document.createElement('div');
+            message.classList.add('message');
+
+            treeContainer.appendChild(treeImage);
+            treeContainer.appendChild(nodeList);
+            treeContainer.appendChild(arrayContainer);
+            treeContainer.appendChild(actionButtons);
+            treeContainer.appendChild(message);
+
+            treesContainer.appendChild(treeContainer);
+        }
+
+        function selectNode(node, treeIndex) {
+            window[`copiedValue${treeIndex}`] = node.dataset.value;
+            document.querySelectorAll(`.tree-container:nth-child(${treeIndex + 1}) .node-item`).forEach(node => node.classList.remove('selected'));
+            node.classList.add('selected');
+        }
+
+        function placeValueInSlot(slot, treeIndex) {
+            const copiedValue = window[`copiedValue${treeIndex}`];
+            if (!copiedValue) return;
+            const valueDiv = slot.querySelector('.value');
+            valueDiv.textContent = copiedValue;
+            slot.dataset.value = copiedValue;
+            window[`copiedValue${treeIndex}`] = null;
+            document.querySelectorAll(`.tree-container:nth-child(${treeIndex + 1}) .node-item`).forEach(node => node.classList.remove('selected'));
+        }
+
+        function clearArray(arrayContainer) {
+            arrayContainer.querySelectorAll('.array-slot .value').forEach(valueDiv => {
+                valueDiv.textContent = '';
+            });
+            arrayContainer.querySelectorAll('.array-slot').forEach(slot => {
+                delete slot.dataset.value;
+            });
+        }
+
+        function checkAnswer(tree, treeIndex, treeContainer) {
+            const correctOrder = tree.nodes;
+            const userOrder = [];
+            const pointsPerTree = treeIndex === 0 ? 30 : treeIndex === 1 ? 30 : 40;
+
+            treeContainer.querySelectorAll('.array-slot').forEach(slot => {
+                userOrder.push(slot.dataset.value || null);
+            });
+
+            const message = treeContainer.querySelector('.message');
+            if (JSON.stringify(userOrder) === JSON.stringify(correctOrder)) {
+                const currentScore = parseInt(localStorage.getItem('level1Score') || 0);
+                const newScore = Math.min(100, currentScore + pointsPerTree);
+                localStorage.setItem('level1Score', newScore);
+
+                // Send message to parent React app
+                window.parent.postMessage({
+                    type: 'LEVEL_UPDATE',
+                    level: 1,
+                    score: newScore,
+                    completed: newScore === 100
+                }, '*');
+
+                message.textContent = `Correct! You earned ${pointsPerTree} points!`;
+                if (treeIndex + 1 < trees.length) {
+                    createTreeUI(trees[treeIndex + 1], treeIndex + 1);
+                } else {
+                    message.textContent += ' Congratulations!! You have completed Level 1';
+                }
+            } else {
+                message.textContent = 'Incorrect. Please try again!';
+            }
+        }
+
+        function initialize() {
+            createTreeUI(trees[0], 0);
+        }
+
+        initialize();
+    </script>
+</body>
+
+</html>

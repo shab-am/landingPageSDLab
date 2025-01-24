@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BST Learning Game</title>
+    <link rel="stylesheet" href="tree.css">
+</head>
+<body>
+    <h1>Binary Search Tree Game</h1>
+    <div id="game">
+        <div id="instructions">
+            <p>A number will appear. Decide where to insert it in the tree using <strong>left</strong>, <strong>right</strong>, or <strong>change level</strong>.</p>
+        </div>
+        <div id="tree"></div>
+        <div id="controls">
+            <button onclick="moveLeft()">Left</button>
+            <button onclick="moveRight()">Right</button>
+            <button onclick="changeLevel()">Change Level</button>
+            <button onclick="finishGame()">Finish</button>
+        </div>
+        <div id="message"></div>
+        <div id="next-number"></div>
+    </div>
+    <script src="tree.js"></script>
+</body>
+</html>
