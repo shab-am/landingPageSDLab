@@ -201,6 +201,28 @@
             opacity: 1;
             visibility: visible;
         }
+        
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background-color: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+            transition: background-color 0.3s;
+        }
+        
+        .back-button:hover {
+            background-color: #4338ca;
+        }
     </style>
 </head>
 
@@ -228,6 +250,9 @@
             <button onclick="startGame()" class="restart">Restart Game</button>
         </div>
     </div>
+    <button onclick="window.history.back()" class="back-button">
+        ← Back to Dashboard
+    </button>
     <script>
         let bst = null;
         let currentNode = null;

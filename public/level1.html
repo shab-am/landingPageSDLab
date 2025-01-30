@@ -163,24 +163,52 @@
             text-align: center;
             flex-grow: 1;
         }
+        
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background-color: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+            transition: background-color 0.3s;
+        }
+        
+        .back-button:hover {
+            background-color: #4338ca;
+        }
     </style>
 </head>
 
 <body>
-    <h1>WELCOME TO LEVEL-1</h1>
-    <H2>Binary Tree: Array Representation</H2>
-    <br>
-    <div class="clearfix">
-        <div id="note">
-            <h3>NOTE</h3>
-            <ul>
-                <li>If the index of parent node is p, then the index of left child is (2*p+1) and the index of right child is (2*p+2)</li>
-                <li>Click on the node to copy the node value and then click on the block of an array where you want to place that node value</li>
-                <li>Click on <strong>Clear Array</strong> button to clear your updations</li>
-                <li>Click on <strong>Check Answer</strong> button to check your answer</li>
-            </ul>
+    <button onclick="handleBackToDashboard()" class="back-button">
+        ← Back to Dashboard
+    </button>
+    <div class="container">
+
+        <h1>WELCOME TO LEVEL-1</h1>
+        <H2>Binary Tree: Array Representation</H2>
+        <br>
+        <div class="clearfix">
+            <div id="note">
+                <h3>NOTE</h3>
+                <ul>
+                    <li>If the index of parent node is p, then the index of left child is (2*p+1) and the index of right child is (2*p+2)</li>
+                    <li>Click on the node to copy the node value and then click on the block of an array where you want to place that node value</li>
+                    <li>Click on <strong>Clear Array</strong> button to clear your updations</li>
+                    <li>Click on <strong>Check Answer</strong> button to check your answer</li>
+                </ul>
+            </div>
+            <div id="treesContainer"></div>
         </div>
-        <div id="treesContainer"></div>
     </div>
 
     <script>
@@ -235,13 +263,14 @@
 
             const checkAnswerButton = document.createElement('button');
             checkAnswerButton.textContent = 'Check Answer';
+            checkAnswerButton.dataset.testid = 'check-answer';
             checkAnswerButton.addEventListener('click', () => checkAnswer(tree, treeIndex, treeContainer));
 
             const clearArrayButton = document.createElement('button');
             clearArrayButton.textContent = 'Clear Array';
+            clearArrayButton.dataset.testid = 'clear-array';
             clearArrayButton.addEventListener('click', () => clearArray(arrayContainer));
 
-            
             actionButtons.appendChild(checkAnswerButton);
             actionButtons.appendChild(clearArrayButton);
 
@@ -282,6 +311,19 @@
             });
         }
 
+        function updateProgress(score, completed) {
+            // Save to localStorage
+            localStorage.setItem('level1Score', score);
+
+            // Notify the parent React app
+            window.parent.postMessage({
+                type: 'LEVEL_UPDATE',
+                level: 1,
+                score: score,
+                completed: completed
+            }, '*');
+        }
+
         function checkAnswer(tree, treeIndex, treeContainer) {
             const correctOrder = tree.nodes;
             const userOrder = [];
@@ -293,17 +335,11 @@
 
             const message = treeContainer.querySelector('.message');
             if (JSON.stringify(userOrder) === JSON.stringify(correctOrder)) {
-                const currentScore = parseInt(localStorage.getItem('level1Score') || 0);
+                const currentScore = parseInt(localStorage.getItem('level1Score') || '0');
                 const newScore = Math.min(100, currentScore + pointsPerTree);
-                localStorage.setItem('level1Score', newScore);
 
-                // Send message to parent React app
-                window.parent.postMessage({
-                    type: 'LEVEL_UPDATE',
-                    level: 1,
-                    score: newScore,
-                    completed: newScore === 100
-                }, '*');
+                // Update progress
+                updateProgress(newScore, newScore === 100);
 
                 message.textContent = `Correct! You earned ${pointsPerTree} points!`;
                 if (treeIndex + 1 < trees.length) {
@@ -318,6 +354,16 @@
 
         function initialize() {
             createTreeUI(trees[0], 0);
+        }
+
+        function handleBackToDashboard() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                window.location.replace('/learn');
+            } else {
+                localStorage.setItem('token', 'demo-token-123'); // Ensure token exists
+                window.location.replace('/learn');
+            }
         }
 
         initialize();

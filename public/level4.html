@@ -46,19 +46,48 @@
         p {
             margin: 10px;
         }
+        
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background-color: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+            transition: background-color 0.3s;
+        }
+        
+        .back-button:hover {
+            background-color: #4338ca;
+        }
     </style>
 </head>
 
 <body>
-    <h1>Binary Search Tree Deletion Game</h1>
-    <p>Delete nodes from the tree while maintaining its BST properties. Earn points for correct deletions!</p>
+    <div class="container">
 
-    <label for="deleteNode">Enter node to delete:</label>
-    <input type="text" id="deleteNode">
-    <button onclick="deleteNode()">Delete Node</button>
-    <h2>Score: <span id="score">0</span></h2>
+        <h1>Binary Search Tree Deletion Game</h1>
+        <p>Delete nodes from the tree while maintaining its BST properties. Earn points for correct deletions!</p>
 
-    <div id="tree"></div>
+        <label for="deleteNode">Enter node to delete:</label>
+        <input type="text" id="deleteNode">
+        <button onclick="deleteNode()">Delete Node</button>
+        <h2>Score: <span id="score">0</span></h2>
+
+        <div id="tree"></div>
+    </div>
+
+    <button onclick="window.history.back()" class="back-button">
+        ← Back to Dashboard
+    </button>
 
     <script>
         class TreeNode {
@@ -242,7 +271,7 @@
                         // Redirect to home page
                         window.location.href = 'index.html';
                     } else {
-                        alert(`Node deleted successfully! You need ${(100 - score)/20} more deletions to complete the level.`);
+                        alert(`Node deleted successfully! You need ${(100 - score) / 20} more deletions to complete the level.`);
                     }
                     renderTree();
                 } else {

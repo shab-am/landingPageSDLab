@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tree Traversal Mastery</title>
+    <title>Level 2 - Tree Traversal Mastery</title>
     <style>
         /* General Reset */
         
@@ -34,7 +34,6 @@
             border-radius: 10px;
             box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
         }
-        /* Header */
         
         header {
             margin-bottom: 30px;
@@ -44,16 +43,6 @@
         h1 {
             color: #2c3e50;
             font-size: 2.5rem;
-        }
-        /* Main Content */
-        
-        #main-content {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            flex-wrap: wrap;
-            gap: 30px;
-            margin-bottom: 30px;
         }
         
         #instructions {
@@ -87,7 +76,6 @@
             font-size: 1.2rem;
             margin: 10px 0;
         }
-        /* Game Container */
         
         #game-container {
             width: 100%;
@@ -159,20 +147,8 @@
         button:hover {
             background-color: #005f99;
         }
-        /* Media Queries for Responsiveness */
         
         @media (max-width: 768px) {
-            body {
-                padding: 20px 10px;
-            }
-            #container {
-                padding: 15px;
-            }
-            #main-content {
-                flex-direction: column;
-                align-items: center;
-                gap: 20px;
-            }
             #instructions,
             #status {
                 width: 100%;
@@ -181,12 +157,28 @@
             #tree-visualization {
                 height: 350px;
             }
-            #controls {
-                flex-direction: column;
-                width: 100%;
-                max-width: 300px;
-                margin: 20px auto;
-            }
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background-color: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+            transition: background-color 0.3s;
+        }
+        
+        .back-button:hover {
+            background-color: #4338ca;
         }
     </style>
 </head>
@@ -194,220 +186,40 @@
 <body>
     <div id="container">
         <header>
-            <h1>Tree Traversal Mastery</h1>
+            <h1 data-testid="header">Tree Traversal Mastery</h1>
         </header>
 
         <div id="main-content">
             <div id="instructions">
-                <h2>Welcome to the Tree Traversal Mastery Game!</h2>
-                <ul>
+                <h2 data-testid="instructions-header">Welcome to the Tree Traversal Mastery Game!</h2>
+                <ul data-testid="instructions-list">
                     <li>Progress through levels with increasing tree complexity.</li>
                     <li>Choose the traversal type and guess the order of nodes.</li>
                     <li>Incorrect guesses deduct points and reset the traversal.</li>
                     <li>Finish within the timer to move to the next level.</li>
                 </ul>
-                <p>Prove your mastery of tree traversals and aim for the top of the leaderboard!</p>
             </div>
-            <div id="status">
-                <div id="level">Level: 1</div>
-                <div id="score">Score: 0</div>
-                <div id="timer">Time Left: 60s</div>
+            <div id="status" data-testid="status-container">
+                <div id="level" data-testid="level-display">Level: 1</div>
+                <div id="score" data-testid="score-display">Score: 0</div>
+                <div id="timer" data-testid="timer-display">Time Left: 60s</div>
             </div>
         </div>
 
         <div id="game-container">
-            <div id="tree-visualization"></div>
+            <div id="tree-visualization" data-testid="tree-visualization"></div>
             <div id="controls">
-                <button onclick="startTraversal('preorder')">Preorder</button>
-                <button onclick="startTraversal('inorder')">Inorder</button>
-                <button onclick="startTraversal('postorder')">Postorder</button>
-                <button onclick="showHint()">Hint (-2 points)</button>
+                <button data-testid="preorder-btn" onclick="startTraversal('preorder')">Preorder</button>
+                <button data-testid="inorder-btn" onclick="startTraversal('inorder')">Inorder</button>
+                <button data-testid="postorder-btn" onclick="startTraversal('postorder')">Postorder</button>
+                <button data-testid="hint-btn" onclick="showHint()">Hint (-2 points)</button>
             </div>
         </div>
     </div>
-    <script>
-        // Random Tree Generator
-        function generateTree(depth = 3) {
-            if (depth === 0) return null;
-            return {
-                value: Math.floor(Math.random() * 100),
-                left: Math.random() > 0.5 ? generateTree(depth - 1) : null,
-                right: Math.random() > 0.5 ? generateTree(depth - 1) : null,
-            };
-        }
 
-        // Tree Traversal
-        function traverseTree(node, order, result = []) {
-            if (!node) return result;
-            if (order === 'preorder') result.push(node);
-            traverseTree(node.left, order, result);
-            if (order === 'inorder') result.push(node);
-            traverseTree(node.right, order, result);
-            if (order === 'postorder') result.push(node);
-            return result;
-        }
-
-        // Visualization
-        function createTreeVisualization(node, x, y, level = 0, parent = null) {
-            if (!node) return;
-
-            const nodeDiv = document.createElement('div');
-            nodeDiv.className = 'node';
-            nodeDiv.textContent = node.value;
-            nodeDiv.style.left = `${x}%`;
-            nodeDiv.style.top = `${y}px`;
-            treeContainer.appendChild(nodeDiv);
-            node.domElement = nodeDiv;
-
-            if (parent) {
-                const line = document.createElement('div');
-                line.className = 'line';
-                const parentRect = parent.domElement.getBoundingClientRect();
-                const childRect = nodeDiv.getBoundingClientRect();
-
-                const startX = parentRect.left + parentRect.width / 2 - treeContainer.getBoundingClientRect().left;
-                const startY = parentRect.top + parentRect.height - treeContainer.getBoundingClientRect().top;
-                const endX = childRect.left + childRect.width / 2 - treeContainer.getBoundingClientRect().left;
-                const endY = childRect.top - treeContainer.getBoundingClientRect().top + 5;
-
-                line.style.width = `${Math.abs(startX - endX)}px`;
-                line.style.height = `${Math.abs(startY - endY)}px`;
-                line.style.left = `${Math.min(startX, endX)}px`;
-                line.style.top = `${Math.min(startY, endY)}px`;
-
-                treeContainer.appendChild(line);
-            }
-
-            nodeDiv.addEventListener('click', () => handleNodeClick(node));
-
-            if (node.left) createTreeVisualization(node.left, x - 15 / (level + 1), y + 70, level + 1, node);
-            if (node.right) createTreeVisualization(node.right, x + 15 / (level + 1), y + 70, level + 1, node);
-        }
-
-        // Game State
-        let tree = generateTree(3);
-        let score = 0;
-        let level = 1;
-        let timer = 60;
-        let traversalNodes = [];
-        let currentIndex = 0;
-        let interval;
-        let pointsPerLevel = 10;
-
-        const treeContainer = document.getElementById('tree-visualization');
-        const scoreDisplay = document.getElementById('score');
-        const timerDisplay = document.getElementById('timer');
-        const levelDisplay = document.getElementById('level');
-
-        // Gameplay
-        function startTraversal(order) {
-            clearInterval(interval);
-            currentIndex = 0;
-            traversalNodes = traverseTree(tree, order);
-            traversalNodes.forEach(node => node.domElement.classList.remove('active', 'hint'));
-
-            timer = 60 - level * 5;
-            timerDisplay.textContent = `Time Left: ${timer}s`;
-
-            interval = setInterval(() => {
-                timer--;
-                timerDisplay.textContent = `Time Left: ${timer}s`;
-                if (timer <= 0) {
-                    clearInterval(interval);
-                    alert('Time is up! Game Over!');
-                    resetGame();
-                }
-            }, 1000);
-        }
-
-        function handleNodeClick(node) {
-            if (node === traversalNodes[currentIndex]) {
-                node.domElement.classList.add('active');
-                currentIndex++;
-                if (currentIndex === traversalNodes.length) {
-                    score += pointsPerLevel;
-                    scoreDisplay.textContent = `Score: ${score}`;
-
-                    // Store score in localStorage
-                    localStorage.setItem('level2Score', score);
-                    clearInterval(interval);
-
-                    if (score === 100) {
-                        alert('Congratulations! You have completed Level 2!');
-
-                        // Make sure we're explicitly setting both the score and completion status
-                        localStorage.setItem('level2Score', '100');
-                        localStorage.setItem('level2Complete', 'true');
-
-                        // Ensure we're sending all the necessary data to update the parent
-                        window.parent.postMessage({
-                            type: 'LEVEL_UPDATE',
-                            level: 2,
-                            score: 100,
-                            completed: true
-                        }, '*');
-                    } else if (score > 100) {
-                        // Reset score to previous value
-                        score -= pointsPerLevel;
-                        scoreDisplay.textContent = `Score: ${score}`;
-                        alert('You need exactly 100 points to complete this level. Try again!');
-                        resetGame();
-                    } else {
-                        // Modified alert to show current score
-                        alert(`Level completed! Current score: ${score}/100 points. Keep going!`);
-                        level++;
-                        levelDisplay.textContent = `Level: ${level}`;
-
-                        window.parent.postMessage({
-                            type: 'LEVEL_UPDATE',
-                            level: 2,
-                            score: score,
-                            completed: false
-                        }, '*');
-
-                        resetGame();
-                    }
-                }
-            } else {
-                alert('Wrong node! Try again.');
-                currentIndex = 0;
-                traversalNodes.forEach(node => node.domElement.classList.remove('active'));
-            }
-        }
-
-        function showHint() {
-            if (currentIndex < traversalNodes.length) {
-                traversalNodes[currentIndex].domElement.classList.add('hint');
-                score = Math.max(0, score - 2);
-                scoreDisplay.textContent = `Score: ${score}`;
-            }
-        }
-
-        // Reset Game
-        function resetGame() {
-            treeContainer.innerHTML = '';
-            tree = generateTree(level + 2);
-            createTreeVisualization(tree, 50, 20);
-        }
-
-        // Initial Setup
-        resetGame();
-
-        // Add initial state check on page load
-        window.onload = function() {
-            // Reset score to 0 on page load
-            score = 0;
-            scoreDisplay.textContent = `Score: ${score}`;
-
-            // Notify parent of initial state
-            window.parent.postMessage({
-                type: 'LEVEL_UPDATE',
-                level: 2,
-                score: 0,
-                completed: false
-            }, '*');
-        };
-    </script>
+    <button onclick="window.history.back()" class="back-button">
+        ← Back to Dashboard
+    </button>
 </body>
 
 </html>

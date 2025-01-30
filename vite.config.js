@@ -8,5 +8,18 @@ export default defineConfig({
         port: 3000,
         open: true
     },
-    publicDir: 'public' // This ensures files in public folder are served at root
+    publicDir: 'public', // This ensures files in public folder are served at root
+    test: {
+        globals: true,
+        environment: 'jsdom',
+        setupFiles: './src/test/setup.js',
+        include: ['src/test/**/*.{test,spec}.{js,jsx}'],
+        coverage: {
+            reporter: ['text', 'json', 'html'],
+            exclude: [
+                'node_modules/',
+                'src/test/setup.js',
+            ],
+        },
+    }
 })
