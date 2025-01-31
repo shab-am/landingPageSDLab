@@ -23,7 +23,7 @@ const LoginForm = () => {
     try {
       const response = await authService.login(formData);
       login(response.token, response.user);
-      // window.location.href = 'https://sd-lab-innovatex.vercel.app/';
+      window.location.href = 'https://product-page-sd-lab.vercel.app/';
     } catch (error) {
       setError('Invalid credentials');
     }
