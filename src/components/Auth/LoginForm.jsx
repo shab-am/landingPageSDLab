@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { authService } from '../../services/authService';
 
 const LoginForm = () => {
   const { login } = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -20,12 +21,18 @@ const LoginForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Login attempt with:', formData);
     try {
       const response = await authService.login(formData);
+      console.log('Login response:', response);
+      if (!response || !response.token) {
+        throw new Error('Invalid response from server');
+      }
       login(response.token, response.user);
       window.location.href = 'https://product-page-sd-lab.vercel.app/';
     } catch (error) {
-      setError('Invalid credentials');
+      console.error('Login error:', error);
+      setError(error.message || 'Invalid credentials');
     }
   };
 
